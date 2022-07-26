@@ -8,7 +8,7 @@ const middleware = require("../middleware/auth")
 
 
 router.post("/authors", authorController.authorCreate);
-
+// console.log(router.post("/authors"))
 router.post("/blogs", middleware.authentication, blogController.blogCreate);
 
 router.get("/blogs", middleware.authentication, blogController.getblog);

@@ -20,23 +20,41 @@ const authorCreate = async function (req, res) {
         const { fname, lname, title, email, password } = requestBody; // Object Destructuring
 
         const regx = /^([a-z0-9\._]+)@([a-z0-9]+.)([a-z]+)(.[a-z])?$/;
-        if (!isValid(fname)) return res.status(400).send({ status: false, message: "Please Enter First Name" });
+        if (!isValid(fname)) {
+            return res.status(400).send({ status: false, message: "Please Enter First Name" });
+        }
 
-        if (!isValid(lname)) return res.status(400).send({ status: false, message: "Please Enter Last Name" });
+        if (!isValid(lname)) {
+            return res.status(400).send({ status: false, message: "Please Enter Last Name" });
+        }
 
-        if (!isValid(title)) return res.status(400).send({ status: false, message: "Please Enter Title" });
-        if (!isValidTitle(title)) return res.status(400).send({ status: false, message: "Title Should be Mr,Mrs,Miss" });
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, message: "Please Enter Title" });
+        }
+        if (!isValidTitle(title)) {
+            return res.status(400).send({ status: false, message: "Title Should be Mr,Mrs,Miss" });
+        }
 
         //  Email Validations
-        if (!isValid(email)) return res.status(400).send({ status: false, message: "Please Enter Email " });
-        if (!regx.test(email)) return res.status(400).send({ status: false, message: "Please Enter valid Email" });
+        if (!isValid(email)) {
+            return res.status(400).send({ status: false, message: "Please Enter Email " });
+        }
+        if (!regx.test(email)) {
+            return res.status(400).send({ status: false, message: "Please Enter valid Email" });
+        }
         const uniqemail = await authorModel.findOne({ email: email });
-        if (uniqemail) return res.status(400).send({ status: false, message: `${email} Allready Exist use Different` })
+        if (uniqemail) {
+            return res.status(400).send({ status: false, message: `${email} Allready Exist use Different` })
+        }
 
         // Password validation
-        if (!isValid(password)) return res.status(400).send({ status: false, message: "Please Enter Your Password" });
+        if (!isValid(password)) {
+            return res.status(400).send({ status: false, message: "Please Enter Your Password" });
+        }
         const valid = password.length;
-        if (!(valid >= 8 && valid <= 20)) return res.status(400).send({ status: false, message: "Please Enter valid Password" });
+        if (!(valid >= 8 && valid <= 20)) {
+            return res.status(400).send({ status: false, message: "Please Enter valid Password" });
+        }
 
         const authorCreated = await authorModel.create(requestBody);
         res.status(201).send({ status: true, message: "Author successfully Register", data: authorCreated })
@@ -53,17 +71,28 @@ const login = async function (req, res) {
         const requestBody = req.body;
         if (Object.keys(requestBody).length == 0) return res.status(400).send({ status: false, message: "Please Enter Email and password" })
         const { email, password } = requestBody //Destructuring
+
         const regx = /^([a-zA-Z0-9\._]+)@([a-zA-Z0-9]+.)([a-z]+)+(.[a-z])?$/;
+
         // validations
-        if (!isValid(email)) return res.status(400).send({ status: false, message: "Please Enter Email" });
-        if (!regx.test(email)) return res.status(400).send({ status: false, message: "Enter valid Email" });
+        if (!isValid(email)) {
+            return res.status(400).send({ status: false, message: "Please Enter Email" });
+        }
+        if (!regx.test(email)) {
+            return res.status(400).send({ status: false, message: "Enter valid Email" });
+        }
 
-        if (!isValid(password)) return res.status(400).send({ status: false, message: "Please enter password" });
+        if (!isValid(password)) {
+            return res.status(400).send({ status: false, message: "Please enter password" });
+        }
         const valid = password.length;
-        if (!(valid >= 8 && valid <= 20)) return res.status(400).send({ status: false, message: "Please Enter valid Password" });
-
+        if (!(valid >= 8 && valid <= 20)) {
+            return res.status(400).send({ status: false, message: "Please Enter valid Password" });
+        }
         const author = await authorModel.findOne(requestBody);
-        if (!author) return res.status(401).send({ status: false, message: "UnAutherize Register First" });
+        if (!author) {
+            return res.status(401).send({ status: false, message: "UnAutherize Register First" });
+        }
 
         const token = jwt.sign({
             userId: author._id.toString(),
@@ -71,6 +100,7 @@ const login = async function (req, res) {
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 10 * 60 * 60
         }, "Group-5");
+        
         res.setHeader("x-api-key", token)
         res.status(200).send({ status: true, message: "Successfully Logined", token: token })
 
